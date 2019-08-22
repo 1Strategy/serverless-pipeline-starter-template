@@ -20,25 +20,25 @@ Replace the `--value "XXXX"` with your information, and run each of the followin
 
 ```bash
 aws ssm put-parameter \
-    --name "/sns/serverless-pipeline/notifications/primary-email" \
+    --name "/serverless-pipeline/sns/notifications/primary-email" \
     --description "Email address for primary recipient of Pipeline notifications" \
     --type "String" \
     --value "PRIMARY_EMAIL_ADDRESS"
 
 aws ssm put-parameter \
-    --name "/codepipeline/serverless-pipeline/github/repo" \
+    --name "/serverless-pipeline/codepipeline/github/repo" \
     --description "Github Repository name for CloudFormation Stack serverless-pipeline" \
     --type "String" \
     --value "GITHUB_REPO_NAME"
 
 aws ssm put-parameter \
-    --name "/codepipeline/serverless-pipeline/github/token" \
+    --name "/serverless-pipeline/codepipeline/github/token" \
     --description "Github Token for CloudFormation Stack serverless-pipeline" \
     --type "String" \
     --value "TOKEN"
 
 aws ssm put-parameter \
-    --name "/codepipeline/serverless-pipeline/github/user" \
+    --name "/serverless-pipeline/codepipeline/github/user" \
     --description "Github Username for CloudFormation Stack serverless-pipeline" \
     --type "String" \
     --value "GITHUB_USER"

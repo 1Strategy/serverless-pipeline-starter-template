@@ -7,7 +7,7 @@ Metadata:
     Description: >
       Starter template which provisions an extensible CI/CD pipeline for Serverless applications built with AWS Serverless Application Model.
 
-      Note: This template requires three parameter stored in Systems Manager Parameter Store
+      Note: This template requires parameter be stored in Systems Manager Parameter Store
   License:
     Description: >
       Copyright 2019 1Strategy
@@ -25,24 +25,24 @@ Parameters:
   PipelineEventsNotificationEmail:
     Description: Email address for Pipeline events subscription; requires verification
     Type: AWS::SSM::Parameter::Value<String>
-    Default: /sns/serverless-pipeline/notifications/primary-email
+    Default: /serverless-pipeline/sns/notifications/primary-email
 
   GithubRepo:
     Description: Gitub Repository name
     Type: AWS::SSM::Parameter::Value<String>
-    Default: /codepipeline/serverless-pipeline/github/repo
+    Default: /serverless-pipeline/codepipeline/github/repo
 
   GithubUser:
     Description: Github user or oganization which owns the source code repository
     Type: AWS::SSM::Parameter::Value<String>
-    Default: /codepipeline/serverless-pipeline/github/user
+    Default: /serverless-pipeline/codepipeline/github/user
 
   GithubToken:
     Description: >
       Github OAuth Token with full permissions on admin:repo_hook and repo
     Type: AWS::SSM::Parameter::Value<String>
     NoEcho: true
-    Default: /codepipeline/serverless-pipeline/github/token
+    Default: /serverless-pipeline/codepipeline/github/token
 
 Resources:
   CodeBuildServiceRole:
