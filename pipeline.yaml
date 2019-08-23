@@ -167,7 +167,7 @@ Resources:
                   - 'cloudformation:ExecuteChangeSet'
                   - 'cloudformation:DeleteChangeSet'
                   - 'cloudformation:DescribeChangeSet'
-                  - 'cloudformation:SetStackPolicy'
+                  - 'cloudformation:GetStackPolicy'
                   - 'cloudformation:SetStackPolicy'
                   - 'cloudformation:ValidateTemplate'
                 Resource:
@@ -238,41 +238,41 @@ Resources:
         Type: S3
         Location: !Sub ${BuildArtifactsBucket}/codebuild-cache
       Source:
-          Type: CODEPIPELINE
-          BuildSpec: |
-            version: 0.2
-            phases:
-              install:
-                runtime-versions:
-                  nodejs: 10
-                commands:
-                  - echo "--------INSTALL PHASE--------"
-                  - pip3 install --user aws-sam-cli
-              pre_build:
-                commands:
-                  - echo "--------PREBUILD PHASE--------"
-                  # Example shows installation of NPM dependencies for shared deps (layers) in a SAM App
-                  # - cd functions/dependencies/shared_deps_one/nodejs
-                  # - npm install
-                  # - cd functions/dependencies/shared_deps_two/nodejs
-                  # - npm install
-                  # - cd ../../../../
-              build:
-                commands:
-                  - echo "--------BUILD PHASE--------"
-                  - echo "Starting SAM packaging `date` in `pwd`"
-                  - sam package --template-file template.yaml --s3-bucket $BUILD_ARTIFACT_BUCKET --output-template-file packaged.yaml
-              post_build:
-                commands:
-                  - echo "--------POST-BUILD PHASE--------"
-                  - echo "SAM packaging completed on `date`"
-            artifacts:
-              files:
-                - packaged.yaml
-              discard-paths: yes
-            cache:
-              paths:
-              - '/root/.cache/pip'
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                nodejs: 10
+              commands:
+                - echo "--------INSTALL PHASE--------"
+                - pip3 install --user aws-sam-cli
+            pre_build:
+              commands:
+                - echo "--------PREBUILD PHASE--------"
+                # Example shows installation of NPM dependencies for shared deps (layers) in a SAM App
+                # - cd functions/dependencies/shared_deps_one/nodejs
+                # - npm install
+                # - cd functions/dependencies/shared_deps_two/nodejs
+                # - npm install
+                # - cd ../../../../
+            build:
+              commands:
+                - echo "--------BUILD PHASE--------"
+                - echo "Starting SAM packaging `date` in `pwd`"
+                - sam package --template-file template.yaml --s3-bucket $BUILD_ARTIFACT_BUCKET --output-template-file packaged.yaml
+            post_build:
+              commands:
+                - echo "--------POST-BUILD PHASE--------"
+                - echo "SAM packaging completed on `date`"
+          artifacts:
+            files:
+              - packaged.yaml
+            discard-paths: yes
+          cache:
+            paths:
+            - '/root/.cache/pip'
 
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
@@ -347,13 +347,6 @@ Resources:
               RunOrder: 2
         - Name: Production
           Actions:
-            - Name: DeploymentApproval
-              ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: "1"
-              RunOrder: 1
             - Name: CreateChangeSet
               ActionTypeId:
                 Category: Deploy
@@ -369,6 +362,13 @@ Resources:
                 Capabilities: CAPABILITY_IAM
               InputArtifacts:
                 - Name: BuildArtifact
+              RunOrder: 1
+            - Name: DeploymentApproval
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: "1"
               RunOrder: 2
             - Name: ExecuteChangeSet
               ActionTypeId:
